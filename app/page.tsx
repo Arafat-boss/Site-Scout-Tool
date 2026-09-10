@@ -107,19 +107,19 @@ export default function Home() {
 
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
+            <Sparkles className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span>Wappalyzer CMS Detection Engine</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white leading-tight transition-colors">
             Find Local Websites Built on{" "}
-            <span className="text-zinc-200 border-b-2 border-zinc-700 pb-0.5">
+            <span className="text-zinc-800 dark:text-zinc-200 border-b-2 border-zinc-400 dark:border-zinc-700 pb-0.5">
               Wix & Squarespace
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto transition-colors">
             Search any city and niche to uncover local business websites, detect their CMS technology stack, extract contact info, and generate high-converting client outreach pitches.
           </p>
         </div>
@@ -146,32 +146,32 @@ export default function Home() {
         {/* Initial Empty State / Feature Highlights (When no search run yet) */}
         {!hasSearched && !isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-            <div className="glass-card rounded-2xl p-6 border border-zinc-800/80 hover:border-zinc-600 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white border border-zinc-800 flex items-center justify-center mb-4">
-                <Globe2 className="w-5 h-5 text-zinc-300" />
+            <div className="glass-card rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
+                <Globe2 className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">Location & Niche Scout</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">Location & Niche Scout</h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Query local businesses across any city worldwide. Pulls company names, website domains, phone numbers, and addresses.
               </p>
             </div>
 
-            <div className="glass-card rounded-2xl p-6 border border-zinc-800/80 hover:border-zinc-600 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white border border-zinc-800 flex items-center justify-center mb-4">
-                <Layers className="w-5 h-5 text-zinc-300" />
+            <div className="glass-card rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
+                <Layers className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">Wappalyzer CMS Detection</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">Wappalyzer CMS Detection</h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Sniffs HTML signatures, static asset CDNs, meta tags, and headers to identify Wix, Squarespace, WordPress, and Shopify.
               </p>
             </div>
 
-            <div className="glass-card rounded-2xl p-6 border border-zinc-800/80 hover:border-zinc-600 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white border border-zinc-800 flex items-center justify-center mb-4">
-                <Sparkles className="w-5 h-5 text-zinc-300" />
+            <div className="glass-card rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
+                <Sparkles className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">AI Pitch Proposal Generator</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">AI Pitch Proposal Generator</h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Instant tailored cold outreach emails pinpointing Wix/Squarespace bottlenecks to pitch custom redesign services.
               </p>
             </div>
@@ -197,7 +197,7 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="border-t border-zinc-900 py-6 text-center text-xs text-zinc-500">
+      <footer className="border-t border-zinc-200 dark:border-zinc-900 py-6 text-center text-xs text-zinc-500 transition-colors">
         Site Scout • Built for Web Designers & Lead Generation • 100% Free & Open Engine
       </footer>
     </div>

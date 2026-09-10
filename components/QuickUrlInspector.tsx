@@ -43,25 +43,25 @@ export const QuickUrlInspector: React.FC = () => {
     switch (cms) {
       case "Wix":
       case "Squarespace":
-        return "bg-white text-black font-bold border-white";
+        return "bg-zinc-900 dark:bg-white text-white dark:text-black font-bold border-zinc-900 dark:border-white shadow-sm";
       case "WordPress":
       case "Shopify":
       case "Webflow":
-        return "bg-zinc-800 text-zinc-200 border-zinc-700";
+        return "bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700";
       default:
-        return "bg-zinc-900 text-zinc-400 border-zinc-800";
+        return "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800";
     }
   };
 
   return (
-    <div className="w-full glass-card rounded-2xl p-5 mb-8 border border-zinc-800 shadow-xl">
+    <div className="w-full glass-card rounded-2xl p-5 mb-8 border border-zinc-200 dark:border-zinc-800 shadow-xl transition-all">
       <div className="flex items-center gap-2 mb-3">
-        <Cpu className="w-4 h-4 text-zinc-300" />
-        <h3 className="text-sm font-bold text-white tracking-wide uppercase">
+        <Cpu className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+        <h3 className="text-sm font-bold text-zinc-900 dark:text-white tracking-wide uppercase">
           Quick Single Website Inspector
         </h3>
       </div>
-      <p className="text-xs text-zinc-400 mb-4">
+      <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-4">
         Paste any direct website URL to instantly sniff its CMS, Wappalyzer signatures, contact info, and response speed.
       </p>
 
@@ -72,17 +72,17 @@ export const QuickUrlInspector: React.FC = () => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="e.g. https://example-business.com"
-            className="w-full h-11 px-4 text-sm bg-zinc-900 border border-zinc-800 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition-all"
+            className="w-full h-11 px-4 text-sm bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 transition-all"
           />
         </div>
         <button
           type="submit"
           disabled={loading || !url.trim()}
-          className="h-11 px-6 rounded-xl bg-white text-black hover:bg-zinc-200 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md"
+          className="h-11 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md"
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin text-black" />
+              <Loader2 className="w-4 h-4 animate-spin text-current" />
               <span>Analyzing...</span>
             </>
           ) : (
@@ -95,21 +95,21 @@ export const QuickUrlInspector: React.FC = () => {
       </form>
 
       {error && (
-        <div className="mt-4 p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-zinc-400" />
+        <div className="mt-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-300 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-zinc-500 dark:text-zinc-400" />
           <span>{error}</span>
         </div>
       )}
 
       {result && (
-        <div className="mt-5 pt-4 border-t border-zinc-800 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in duration-300">
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 flex flex-col justify-between">
-            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Detected CMS</span>
+        <div className="mt-5 pt-4 border-t border-zinc-200 dark:border-zinc-800 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in duration-300">
+          <div className="p-3.5 rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
+            <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Detected CMS</span>
             <div className="mt-2 flex items-center gap-2">
               <span className={`px-2.5 py-1 text-xs font-medium rounded-lg border ${getCmsBadgeColor(result.cms)}`}>
                 {result.cms}
               </span>
-              <span className="text-xs text-zinc-400 font-mono">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400 font-mono">
                 {result.confidence}% confidence
               </span>
             </div>
@@ -118,12 +118,12 @@ export const QuickUrlInspector: React.FC = () => {
             </span>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 md:col-span-2">
-            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Tech Stack & Tags</span>
+          <div className="p-3.5 rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 md:col-span-2">
+            <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Tech Stack & Tags</span>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {result.technologies.length > 0 ? (
                 result.technologies.map((tech, i) => (
-                  <span key={i} className="px-2 py-0.5 text-[11px] bg-zinc-900 border border-zinc-800 rounded-md text-zinc-300 font-mono">
+                  <span key={i} className="px-2 py-0.5 text-[11px] bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-md text-zinc-800 dark:text-zinc-300 font-mono shadow-xs">
                     {tech}
                   </span>
                 ))
@@ -132,16 +132,16 @@ export const QuickUrlInspector: React.FC = () => {
               )}
             </div>
             {(result.emails.length > 0 || result.phones.length > 0) && (
-              <div className="mt-3 pt-2 border-t border-zinc-800 flex flex-wrap gap-3 text-xs text-zinc-300 font-mono">
+              <div className="mt-3 pt-2 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap gap-3 text-xs text-zinc-700 dark:text-zinc-300 font-mono">
                 {result.emails[0] && (
-                  <span className="flex items-center gap-1.5 text-zinc-300">
-                    <Mail className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                    <Mail className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
                     {result.emails[0]}
                   </span>
                 )}
                 {result.phones[0] && (
-                  <span className="flex items-center gap-1.5 text-zinc-300">
-                    <Phone className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                    <Phone className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
                     {result.phones[0]}
                   </span>
                 )}
