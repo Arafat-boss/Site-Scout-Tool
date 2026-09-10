@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Site Scout — Local CMS & Tech Stack Lead Discovery Tool
 
-## Getting Started
+An intelligent, full-stack lead generation and CMS detection application built with **Next.js 16 (App Router)**, **React 19**, **Tailwind CSS v4**, and **Wappalyzer Core**.
 
-First, run the development server:
+Site Scout helps web designers, agencies, and sales professionals uncover local businesses in any city, detect their website technology stack (specifically flagging **Wix**, **Squarespace**, **WordPress**, **Shopify**, and **Webflow**), extract contact details, generate AI outreach pitches, and export leads to Excel.
 
+---
+
+## ✨ Key Features
+
+- 🔍 **Location & Niche Scout**: Search across any city or category worldwide (e.g., *Dentists in Miami*, *Real Estate in London*).
+- 🏷️ **Wappalyzer & CMS Detector**:
+  - Sniffs DOM, headers, CDN assets, script signatures, and meta tags.
+  - Automatically identifies **Wix**, **Squarespace**, **WordPress**, **Shopify**, **Webflow**, **Weebly**, **GoDaddy**, etc.
+  - **Official Wappalyzer API v2 Support**: Connect your official Wappalyzer API key or use the built-in 100% free scanner engine.
+- ⚡ **Lead Data Enrichment**: Automatically extracts business names, phone numbers, contact emails, addresses, and social media links (Facebook, Instagram, LinkedIn, X/Twitter).
+- 🪄 **AI Cold Outreach Pitch Generator**: 1-click tailored email proposals identifying Wix/Squarespace performance, mobile layout, and SEO bottlenecks to pitch redesign services.
+- 📊 **Interactive Analytics & Filters**: Real-time stats cards and one-click filtering by CMS platform.
+- 📥 **Instant Excel / CSV Export**: Export all enriched leads to `.xlsx` with one click.
+- 🧪 **Quick URL Inspector**: Single-site analyzer bar to inspect any custom website on demand.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16 (App Router & Turbopack)](https://nextjs.org/)
+- **UI & Components**: [React 19](https://react.dev/), [Lucide React Icons](https://lucide.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **HTML & Metadata Parser**: [Cheerio](https://cheerio.js.org/)
+- **Data Export**: [SheetJS (XLSX)](https://sheetjs.com/)
+- **Language**: TypeScript 5
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Arafat-boss/Site-Scout-Tool.git
+cd site-scout
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run the development server
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## ⚙️ Optional API Settings
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Site Scout works **100% out of the box without any API keys**. However, you can optionally configure keys in the **Settings** drawer:
+- **Wappalyzer API v2 Key**: For official Wappalyzer lookup.
+- **SerpApi / Serper.dev Key**: For direct Google Maps integration.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📄 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License • Built by [Arafat](https://github.com/Arafat-boss)
