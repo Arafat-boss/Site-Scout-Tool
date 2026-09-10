@@ -54,7 +54,7 @@ export const QuickUrlInspector: React.FC = () => {
   };
 
   return (
-    <div className="w-full glass-card rounded-2xl p-5 mb-8 border border-zinc-200 dark:border-zinc-800 shadow-xl transition-all">
+    <div className="w-full glass-card rounded-md p-5 mb-8 border border-zinc-200 dark:border-zinc-800 shadow-xl transition-all">
       <div className="flex items-center gap-2 mb-3">
         <Cpu className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
         <h3 className="text-sm font-bold text-zinc-900 dark:text-white tracking-wide uppercase">
@@ -72,13 +72,13 @@ export const QuickUrlInspector: React.FC = () => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="e.g. https://example-business.com"
-            className="w-full h-11 px-4 text-sm bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 transition-all"
+            className="w-full h-11 px-4 text-sm bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 transition-all"
           />
         </div>
         <button
           type="submit"
           disabled={loading || !url.trim()}
-          className="h-11 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md"
+          className="h-11 px-6 rounded bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md"
         >
           {loading ? (
             <>
@@ -95,7 +95,7 @@ export const QuickUrlInspector: React.FC = () => {
       </form>
 
       {error && (
-        <div className="mt-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-300 text-xs flex items-center gap-2">
+        <div className="mt-4 p-3 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-300 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0 text-zinc-500 dark:text-zinc-400" />
           <span>{error}</span>
         </div>
@@ -103,10 +103,10 @@ export const QuickUrlInspector: React.FC = () => {
 
       {result && (
         <div className="mt-5 pt-4 border-t border-zinc-200 dark:border-zinc-800 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in duration-300">
-          <div className="p-3.5 rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
+          <div className="p-3.5 rounded bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
             <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Detected CMS</span>
             <div className="mt-2 flex items-center gap-2">
-              <span className={`px-2.5 py-1 text-xs font-medium rounded-lg border ${getCmsBadgeColor(result.cms)}`}>
+              <span className={`px-2.5 py-1 text-xs font-medium rounded-sm border ${getCmsBadgeColor(result.cms)}`}>
                 {result.cms}
               </span>
               <span className="text-xs text-zinc-600 dark:text-zinc-400 font-mono">
@@ -118,12 +118,12 @@ export const QuickUrlInspector: React.FC = () => {
             </span>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 md:col-span-2">
+          <div className="p-3.5 rounded bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 md:col-span-2">
             <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Tech Stack & Tags</span>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {result.technologies.length > 0 ? (
                 result.technologies.map((tech, i) => (
-                  <span key={i} className="px-2 py-0.5 text-[11px] bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-md text-zinc-800 dark:text-zinc-300 font-mono shadow-xs">
+                  <span key={i} className="px-2 py-0.5 text-[11px] bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-sm text-zinc-800 dark:text-zinc-300 font-mono shadow-xs">
                     {tech}
                   </span>
                 ))

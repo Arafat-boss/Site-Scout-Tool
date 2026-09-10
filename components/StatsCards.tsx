@@ -29,10 +29,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ stats = {} }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
       {/* Total Scanned */}
-      <div className="glass-card rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
+      <div className="glass-card rounded-md p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Total Scanned</span>
-          <div className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <div className="p-1.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
             <Globe2 className="w-4 h-4" />
           </div>
         </div>
@@ -43,10 +43,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ stats = {} }) => {
       </div>
 
       {/* Wix Detected */}
-      <div className="glass-card rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
+      <div className="glass-card rounded-md p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Wix Sites</span>
-          <div className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <div className="p-1.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
             <Layers className="w-4 h-4" />
           </div>
         </div>
@@ -59,10 +59,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ stats = {} }) => {
       </div>
 
       {/* Squarespace Detected */}
-      <div className="glass-card rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
+      <div className="glass-card rounded-md p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Squarespace</span>
-          <div className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <div className="p-1.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
             <Cpu className="w-4 h-4" />
           </div>
         </div>
@@ -75,10 +75,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ stats = {} }) => {
       </div>
 
       {/* WordPress & Others */}
-      <div className="glass-card rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
+      <div className="glass-card rounded-md p-4 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">WP / Others</span>
-          <div className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <div className="p-1.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
             <Activity className="w-4 h-4" />
           </div>
         </div>

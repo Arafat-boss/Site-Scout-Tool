@@ -62,7 +62,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
   };
 
   return (
-    <div className="w-full glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800 relative overflow-hidden mb-10 transition-colors">
+    <div className="w-full glass-card rounded-md p-6 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800 relative overflow-hidden mb-10 transition-colors">
       <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
         {/* Main Search Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,7 +79,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Miami, FL or London, UK"
                 required
-                className="w-full h-12 pl-4 pr-10 text-sm bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-300 dark:border-zinc-700/80 rounded-2xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-white focus:ring-1 focus:ring-zinc-900 dark:focus:ring-white transition-all"
+                className="w-full h-11 pl-4 pr-10 text-sm bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-300 dark:border-zinc-700/80 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-white focus:ring-1 focus:ring-zinc-900 dark:focus:ring-white transition-all"
               />
             </div>
             {/* Quick Location Pills */}
@@ -89,7 +89,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
                   type="button"
                   key={loc}
                   onClick={() => setLocation(loc)}
-                  className="px-2 py-0.5 text-[11px] bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg transition-colors border border-zinc-200 dark:border-zinc-800 cursor-pointer"
+                  className="px-2 py-0.5 text-[11px] bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-sm transition-colors border border-zinc-200 dark:border-zinc-800 cursor-pointer"
                 >
                   {loc}
                 </button>
@@ -110,7 +110,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
                 onChange={(e) => setNiche(e.target.value)}
                 placeholder="e.g. Dentists, Real Estate, Roofing"
                 required
-                className="w-full h-12 pl-4 pr-10 text-sm bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-300 dark:border-zinc-700/80 rounded-2xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-white focus:ring-1 focus:ring-zinc-900 dark:focus:ring-white transition-all"
+                className="w-full h-11 pl-4 pr-10 text-sm bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-300 dark:border-zinc-700/80 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-white focus:ring-1 focus:ring-zinc-900 dark:focus:ring-white transition-all"
               />
             </div>
             {/* Quick Niche Pills */}
@@ -120,7 +120,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
                   type="button"
                   key={n}
                   onClick={() => setNiche(n)}
-                  className="px-2 py-0.5 text-[11px] bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg transition-colors border border-zinc-200 dark:border-zinc-800 cursor-pointer"
+                  className="px-2 py-0.5 text-[11px] bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-sm transition-colors border border-zinc-200 dark:border-zinc-800 cursor-pointer"
                 >
                   {n}
                 </button>
@@ -145,7 +145,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2">
             {CMS_OPTIONS.map((cms) => {
               const isSelected = targetCms.includes(cms.id);
               return (
@@ -153,14 +153,14 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
                   type="button"
                   key={cms.id}
                   onClick={() => toggleCms(cms.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border cursor-pointer ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold transition-all border cursor-pointer ${
                     isSelected
                       ? "bg-zinc-900 dark:bg-white text-white dark:text-black border-zinc-900 dark:border-white shadow-sm font-bold"
                       : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-white"
                   }`}
                 >
                   <div
-                    className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
+                    className={`w-3.5 h-3.5 rounded-xs flex items-center justify-center border transition-all ${
                       isSelected
                         ? "bg-white dark:bg-black border-white dark:border-black text-black dark:text-white"
                         : "border-zinc-300 dark:border-zinc-700 bg-zinc-200 dark:bg-zinc-800"
@@ -182,7 +182,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
             <select
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
-              className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 text-xs text-zinc-900 dark:text-white focus:outline-none focus:border-zinc-900 dark:focus:border-white"
+              className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded px-2.5 py-1 text-xs text-zinc-900 dark:text-white focus:outline-none focus:border-zinc-900 dark:focus:border-white"
             >
               <option value={15}>15 Sites</option>
               <option value={30}>30 Sites (Recommended)</option>
@@ -194,7 +194,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto h-12 px-8 rounded-2xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-bold text-sm flex items-center justify-center gap-2.5 shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full sm:w-auto h-11 px-6 rounded bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isLoading ? (
               <>

@@ -107,7 +107,7 @@ export default function Home() {
 
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
             <Sparkles className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span>Wappalyzer CMS Detection Engine</span>
           </div>
@@ -115,7 +115,7 @@ export default function Home() {
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white leading-tight transition-colors">
             Find Local Websites Built on{" "}
             <span className="text-zinc-800 dark:text-zinc-200 border-b-2 border-zinc-400 dark:border-zinc-700 pb-0.5">
-              Wix & Squarespace
+              All CMS Or Custom
             </span>
           </h1>
 
@@ -146,8 +146,8 @@ export default function Home() {
         {/* Initial Empty State / Feature Highlights (When no search run yet) */}
         {!hasSearched && !isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-            <div className="glass-card rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
+            <div className="glass-card rounded-md p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+              <div className="w-9 h-9 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
                 <Globe2 className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
               </div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">Location & Niche Scout</h3>
@@ -156,8 +156,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="glass-card rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
+            <div className="glass-card rounded-md p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+              <div className="w-9 h-9 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
                 <Layers className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
               </div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">Wappalyzer CMS Detection</h3>
@@ -166,8 +166,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="glass-card rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
+            <div className="glass-card rounded-md p-6 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+              <div className="w-9 h-9 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
                 <Sparkles className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
               </div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">AI Pitch Proposal Generator</h3>

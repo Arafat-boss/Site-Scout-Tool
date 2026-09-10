@@ -47,24 +47,24 @@ export const LeadPitchModal: React.FC<LeadPitchModalProps> = ({ lead, isOpen, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl glass-dropdown rounded-3xl p-6 sm:p-8 shadow-2xl relative border border-zinc-200 dark:border-zinc-800 max-h-[90vh] flex flex-col bg-white dark:bg-zinc-950">
+      <div className="w-full max-w-2xl glass-dropdown rounded-md p-6 sm:p-8 shadow-2xl relative border border-zinc-200 dark:border-zinc-800 max-h-[90vh] flex flex-col bg-white dark:bg-zinc-950">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
+          className="absolute top-6 right-6 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <div className="p-2.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <Sparkles className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-bold text-zinc-900 dark:text-white">{lead.name}</h3>
-              <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-lg border ${getCmsBadgeColor(lead.cms)}`}>
+              <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-sm border ${getCmsBadgeColor(lead.cms)}`}>
                 {lead.cms}
               </span>
             </div>
@@ -81,7 +81,7 @@ export const LeadPitchModal: React.FC<LeadPitchModalProps> = ({ lead, isOpen, on
         </div>
 
         {/* Key Weaknesses / Pitch Angle */}
-        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 mb-4">
+        <div className="p-4 rounded bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 mb-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-2 flex items-center gap-1.5">
             <ShieldAlert className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
             Detected Redesign & Optimization Angles
@@ -106,7 +106,7 @@ export const LeadPitchModal: React.FC<LeadPitchModalProps> = ({ lead, isOpen, on
               type="text"
               readOnly
               value={proposal.subject}
-              className="w-full px-3.5 py-2 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white font-medium focus:outline-none"
+              className="w-full px-3.5 py-2 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded text-zinc-900 dark:text-white font-medium focus:outline-none"
             />
           </div>
 
@@ -118,7 +118,7 @@ export const LeadPitchModal: React.FC<LeadPitchModalProps> = ({ lead, isOpen, on
               readOnly
               rows={8}
               value={proposal.body}
-              className="w-full p-3.5 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-800 dark:text-zinc-300 font-mono focus:outline-none resize-none leading-relaxed"
+              className="w-full p-3.5 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded text-zinc-800 dark:text-zinc-300 font-mono focus:outline-none resize-none leading-relaxed"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export const LeadPitchModal: React.FC<LeadPitchModalProps> = ({ lead, isOpen, on
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 text-xs font-semibold rounded bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 flex items-center gap-1.5 transition-all cursor-pointer"
             >
               {copied ? (
                 <>
@@ -147,7 +147,7 @@ export const LeadPitchModal: React.FC<LeadPitchModalProps> = ({ lead, isOpen, on
             </button>
             <button
               onClick={handleOpenEmail}
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 text-xs font-semibold rounded bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Open in Mail</span>

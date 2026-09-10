@@ -60,18 +60,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-lg glass-dropdown rounded-2xl p-6 shadow-2xl relative border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-lg glass-dropdown rounded-md p-6 shadow-2xl relative border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
+          className="absolute top-5 right-5 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center gap-2.5 mb-2">
-          <div className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <div className="p-2 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <Key className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
           </div>
           <div>
@@ -80,7 +80,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
         </div>
 
-        <div className="my-4 p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 flex items-start gap-2.5">
+        <div className="my-4 p-3.5 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 flex items-start gap-2.5">
           <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-zinc-600 dark:text-zinc-300" />
           <span>
             <strong>100% Free Engine is Active:</strong> Site Scout automatically uses the built-in free web scraper & Wappalyzer scanner without needing any API keys.
@@ -99,7 +99,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               value={wappalyzerApiKey}
               onChange={(e) => setWappalyzerApiKey(e.target.value)}
               placeholder="Paste Wappalyzer v2 API Key"
-              className="w-full h-10 px-3 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 font-mono"
+              className="w-full h-10 px-3 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 font-mono"
             />
             <p className="text-[11px] text-zinc-500 mt-1 font-mono">
               Connects directly to <code>api.wappalyzer.com/v2/lookup/</code> for official technology lookups.
@@ -115,7 +115,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               value={serpApiKey}
               onChange={(e) => setSerpApiKey(e.target.value)}
               placeholder="Paste SerpApi Private Key"
-              className="w-full h-10 px-3 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 font-mono"
+              className="w-full h-10 px-3 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 font-mono"
             />
             <p className="text-[11px] text-zinc-500 mt-1">
               Provides Google Maps Direct API results.
@@ -131,7 +131,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               value={serperApiKey}
               onChange={(e) => setSerperApiKey(e.target.value)}
               placeholder="Paste Serper API Key"
-              className="w-full h-10 px-3 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 font-mono"
+              className="w-full h-10 px-3 text-xs bg-zinc-50 dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500 font-mono"
             />
             <p className="text-[11px] text-zinc-500 mt-1">
               Includes 2,500 free queries upon registration.
@@ -150,13 +150,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-medium rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
+                className="px-4 py-2 text-xs font-medium rounded text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-xs font-semibold rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-5 py-2 text-xs font-semibold rounded bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 {savedSuccess ? (
                   <>

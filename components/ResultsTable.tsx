@@ -81,7 +81,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 
   if (!leads || leads.length === 0) {
     return (
-      <div className="w-full glass-card rounded-3xl p-8 text-center border border-zinc-200 dark:border-zinc-800 my-8">
+      <div className="w-full glass-card rounded-md p-8 text-center border border-zinc-200 dark:border-zinc-800 my-8">
         <AlertCircle className="w-8 h-8 text-zinc-500 dark:text-zinc-400 mx-auto mb-3" />
         <h4 className="text-base font-bold text-zinc-900 dark:text-white">No websites discovered for &ldquo;{niche}&rdquo; in &ldquo;{location}&rdquo;</h4>
         <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md mx-auto mt-1">
@@ -92,13 +92,13 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
   }
 
   return (
-    <div className="w-full glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800 space-y-6 transition-all">
+    <div className="w-full glass-card rounded-md p-6 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800 space-y-6 transition-all">
       {/* Table Controls Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             <span>Discovered Leads & Tech Profiles</span>
-            <span className="px-2.5 py-0.5 rounded-full text-xs bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-800 font-mono">
+            <span className="px-2 py-0.5 rounded-sm text-xs bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-800 font-mono">
               {filteredLeads.length} matches
             </span>
           </h3>
@@ -117,15 +117,15 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               placeholder="Filter by name, URL..."
-              className="w-full sm:w-48 h-9 pl-9 pr-3 text-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500"
+              className="w-full sm:w-48 h-9 pl-9 pr-3 text-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-500"
             />
           </div>
 
           {/* View Toggle */}
-          <div className="flex items-center p-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl">
+          <div className="flex items-center p-0.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded">
             <button
               onClick={() => setViewMode("table")}
-              className={`p-1.5 rounded-lg text-xs transition-all cursor-pointer ${
+              className={`p-1.5 rounded-sm text-xs transition-all cursor-pointer ${
                 viewMode === "table"
                   ? "bg-zinc-900 text-white dark:bg-white dark:text-black shadow-sm font-semibold"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
@@ -136,7 +136,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
             </button>
             <button
               onClick={() => setViewMode("cards")}
-              className={`p-1.5 rounded-lg text-xs transition-all cursor-pointer ${
+              className={`p-1.5 rounded-sm text-xs transition-all cursor-pointer ${
                 viewMode === "cards"
                   ? "bg-zinc-900 text-white dark:bg-white dark:text-black shadow-sm font-semibold"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
@@ -150,7 +150,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
           {/* Export to Excel */}
           <button
             onClick={handleExportCSV}
-            className="h-9 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+            className="h-9 px-3.5 rounded bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export Excel</span>
@@ -159,7 +159,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
       </div>
 
       {/* CMS Filter Chips */}
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-850">
+      <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-zinc-200 dark:border-zinc-850">
         <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase mr-1">Platform Filter:</span>
         {["ALL", "Wix", "Squarespace", "WordPress", "Shopify", "Webflow"].map((cms) => {
           const count = cms === "ALL" ? leads.length : leads.filter((l) => l.cms === cms).length;
@@ -168,7 +168,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
             <button
               key={cms}
               onClick={() => setActiveCmsFilter(cms)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-sm text-xs font-medium transition-all cursor-pointer ${
                 activeCmsFilter === cms
                   ? "bg-zinc-900 dark:bg-white text-white dark:text-black border border-zinc-900 dark:border-white font-bold"
                   : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
@@ -182,13 +182,13 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 
       {/* Results Render */}
       {filteredLeads.length === 0 ? (
-        <div className="py-10 text-center rounded-2xl bg-zinc-100/60 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-6">
+        <div className="py-10 text-center rounded-md bg-zinc-100/60 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-6">
           <p className="text-xs text-zinc-700 dark:text-zinc-300">
             0 {activeCmsFilter} websites in this batch of {leads.length} businesses.
           </p>
           <button
             onClick={() => setActiveCmsFilter("ALL")}
-            className="mt-3 px-3.5 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer"
+            className="mt-3 px-3 py-1.5 rounded bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span>Show All {leads.length} Discovered Websites</span>
@@ -196,23 +196,23 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
         </div>
       ) : viewMode === "table" ? (
         /* TABLE VIEW */
-        <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-black/60 shadow-sm">
+        <div className="overflow-x-auto rounded-md border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-black/60 shadow-sm">
           <table className="w-full text-left text-xs text-zinc-700 dark:text-zinc-300">
             <thead className="bg-zinc-100 dark:bg-zinc-900 text-[11px] font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
-                <th className="py-3.5 px-4">Business & Location</th>
-                <th className="py-3.5 px-4">Website</th>
-                <th className="py-3.5 px-4">Detected CMS</th>
-                <th className="py-3.5 px-4">Tech Signatures</th>
-                <th className="py-3.5 px-4">Contact Info</th>
-                <th className="py-3.5 px-4 text-right">Outreach Actions</th>
+                <th className="py-3 px-4">Business & Location</th>
+                <th className="py-3 px-4">Website</th>
+                <th className="py-3 px-4">Detected CMS</th>
+                <th className="py-3 px-4">Tech Signatures</th>
+                <th className="py-3 px-4">Contact Info</th>
+                <th className="py-3 px-4 text-right">Outreach Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-850 font-sans">
               {filteredLeads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors group">
                   {/* Business Name */}
-                  <td className="py-4 px-4 font-medium text-zinc-900 dark:text-white max-w-[200px]">
+                  <td className="py-3.5 px-4 font-medium text-zinc-900 dark:text-white max-w-[200px]">
                     <div className="font-semibold text-sm truncate text-zinc-900 dark:text-white">{lead.name}</div>
                     <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{lead.address}</div>
                     {lead.rating && (
@@ -225,7 +225,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                   </td>
 
                   {/* Website */}
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-4">
                     <a
                       href={lead.website}
                       target="_blank"
@@ -238,9 +238,9 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                   </td>
 
                   {/* Detected CMS */}
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-4">
                     <div className="flex flex-col gap-1 items-start">
-                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${getCmsBadgeColor(lead.cms)}`}>
+                      <span className={`px-2 py-0.5 text-xs font-semibold rounded-sm border ${getCmsBadgeColor(lead.cms)}`}>
                         {lead.cms}
                       </span>
                       <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
@@ -250,15 +250,15 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                   </td>
 
                   {/* Tech Signatures */}
-                  <td className="py-4 px-4 max-w-[220px]">
+                  <td className="py-3.5 px-4 max-w-[220px]">
                     <div className="flex flex-wrap gap-1">
                       {lead.technologies.slice(0, 3).map((t, idx) => (
-                        <span key={idx} className="px-1.5 py-0.5 text-[10px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded text-zinc-700 dark:text-zinc-300 font-mono">
+                        <span key={idx} className="px-1.5 py-0.5 text-[10px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-sm text-zinc-700 dark:text-zinc-300 font-mono">
                           {t}
                         </span>
                       ))}
                       {lead.technologies.length > 3 && (
-                        <span className="px-1.5 py-0.5 text-[10px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded text-zinc-400 dark:text-zinc-500 font-mono">
+                        <span className="px-1.5 py-0.5 text-[10px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-sm text-zinc-400 dark:text-zinc-500 font-mono">
                           +{lead.technologies.length - 3}
                         </span>
                       )}
@@ -266,7 +266,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                   </td>
 
                   {/* Contact Info */}
-                  <td className="py-4 px-4 text-[11px] space-y-1">
+                  <td className="py-3.5 px-4 text-[11px] space-y-1">
                     {lead.phone && lead.phone !== "Not found" ? (
                       <div className="flex items-center gap-1.5 text-zinc-800 dark:text-zinc-200">
                         <Phone className="w-3 h-3 text-zinc-500 dark:text-zinc-400 shrink-0" />
@@ -285,10 +285,10 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                   </td>
 
                   {/* Action */}
-                  <td className="py-4 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right">
                     <button
                       onClick={() => onOpenPitch(lead)}
-                      className="px-3.5 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 text-xs font-semibold flex items-center gap-1.5 ml-auto transition-all shadow-sm cursor-pointer"
+                      className="px-3 py-1.5 rounded bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 text-xs font-semibold flex items-center gap-1.5 ml-auto transition-all shadow-xs cursor-pointer"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
                       <span>Pitch AI</span>
@@ -305,11 +305,11 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
           {filteredLeads.map((lead) => (
             <div
               key={lead.id}
-              className="glass-card rounded-2xl p-5 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4"
+              className="glass-card rounded-md p-5 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4"
             >
               <div>
                 <div className="flex items-start justify-between gap-2">
-                  <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-lg border ${getCmsBadgeColor(lead.cms)}`}>
+                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-sm border ${getCmsBadgeColor(lead.cms)}`}>
                     {lead.cms}
                   </span>
                   {lead.rating && (
@@ -336,7 +336,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                 {/* Tech tags */}
                 <div className="mt-3 flex flex-wrap gap-1">
                   {lead.technologies.slice(0, 4).map((tech, i) => (
-                    <span key={i} className="px-2 py-0.5 text-[10px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded text-zinc-700 dark:text-zinc-300 font-mono">
+                    <span key={i} className="px-2 py-0.5 text-[10px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-sm text-zinc-700 dark:text-zinc-300 font-mono">
                       {tech}
                     </span>
                   ))}
@@ -350,7 +350,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
                 </div>
                 <button
                   onClick={() => onOpenPitch(lead)}
-                  className="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-3 py-1.5 rounded bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
                   <span>Pitch</span>
@@ -363,3 +363,6 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
     </div>
   );
 };
+
+
+
