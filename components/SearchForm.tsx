@@ -187,10 +187,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) =
               onChange={(e) => setLimit(Number(e.target.value))}
               className="bg-slate-900 border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-indigo-500"
             >
-              <option value={10}>10 Sites</option>
-              <option value={15}>15 Sites (Recommended)</option>
-              <option value={20}>20 Sites</option>
-              <option value={30}>30 Sites (Deep Scan)</option>
+              <option value={15}>15 Sites</option>
+              <option value={30}>30 Sites (Recommended)</option>
+              <option value={50}>50 Sites (Deep Scan)</option>
+              <option value={100}>100 Sites (Full City Sweep)</option>
             </select>
           </div>
 
