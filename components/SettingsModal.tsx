@@ -59,29 +59,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-lg glass-dropdown rounded-2xl p-6 shadow-2xl relative border border-white/10 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-lg glass-dropdown rounded-2xl p-6 shadow-2xl relative border border-zinc-800 bg-zinc-950 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
+          className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-900 transition-all cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center gap-2.5 mb-2">
-          <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-            <Key className="w-5 h-5" />
+          <div className="p-2 rounded-lg bg-zinc-900 text-white border border-zinc-800">
+            <Key className="w-5 h-5 text-zinc-300" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">Engine & API Settings</h3>
-            <p className="text-xs text-slate-400">Optional API keys for scaling searches</p>
+            <p className="text-xs text-zinc-400">Optional API keys for scaling searches</p>
           </div>
         </div>
 
-        <div className="my-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-start gap-2.5">
-          <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+        <div className="my-4 p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 flex items-start gap-2.5">
+          <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-zinc-300" />
           <span>
             <strong>100% Free Engine is Active:</strong> Site Scout automatically uses the built-in free web scraper & Wappalyzer scanner without needing any API keys.
           </span>
@@ -90,8 +90,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <form onSubmit={handleSave} className="space-y-4">
           {/* Wappalyzer API Key */}
           <div>
-            <label className="block text-xs font-semibold text-violet-300 mb-1.5 flex items-center gap-1.5">
-              <Cpu className="w-3.5 h-3.5 text-violet-400" />
+            <label className="block text-xs font-semibold text-zinc-300 mb-1.5 flex items-center gap-1.5">
+              <Cpu className="w-3.5 h-3.5 text-zinc-400" />
               Official Wappalyzer API Key (Optional)
             </label>
             <input
@@ -99,15 +99,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               value={wappalyzerApiKey}
               onChange={(e) => setWappalyzerApiKey(e.target.value)}
               placeholder="Paste Wappalyzer v2 API Key"
-              className="w-full h-10 px-3 text-xs bg-slate-900 border border-violet-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono"
+              className="w-full h-10 px-3 text-xs bg-black border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 font-mono"
             />
-            <p className="text-[11px] text-slate-500 mt-1">
+            <p className="text-[11px] text-zinc-500 mt-1 font-mono">
               Connects directly to <code>api.wappalyzer.com/v2/lookup/</code> for official technology lookups.
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
               SerpApi Key (Optional)
             </label>
             <input
@@ -115,15 +115,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               value={serpApiKey}
               onChange={(e) => setSerpApiKey(e.target.value)}
               placeholder="Paste SerpApi Private Key"
-              className="w-full h-10 px-3 text-xs bg-slate-900 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+              className="w-full h-10 px-3 text-xs bg-black border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 font-mono"
             />
-            <p className="text-[11px] text-slate-500 mt-1">
+            <p className="text-[11px] text-zinc-500 mt-1">
               Provides Google Maps Direct API results.
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
               Serper.dev Key (Optional)
             </label>
             <input
@@ -131,18 +131,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               value={serperApiKey}
               onChange={(e) => setSerperApiKey(e.target.value)}
               placeholder="Paste Serper API Key"
-              className="w-full h-10 px-3 text-xs bg-slate-900 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+              className="w-full h-10 px-3 text-xs bg-black border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 font-mono"
             />
-            <p className="text-[11px] text-slate-500 mt-1">
+            <p className="text-[11px] text-zinc-500 mt-1">
               Includes 2,500 free queries upon registration.
             </p>
           </div>
 
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+          <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
             <button
               type="button"
               onClick={handleClear}
-              className="text-xs text-rose-400 hover:text-rose-300 hover:underline"
+              className="text-xs text-zinc-400 hover:text-white underline cursor-pointer"
             >
               Reset to Free Default
             </button>
@@ -150,17 +150,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-medium rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                className="px-4 py-2 text-xs font-medium rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 flex items-center gap-1.5 transition-all"
+                className="px-5 py-2 text-xs font-semibold rounded-xl bg-white text-black hover:bg-zinc-200 shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 {savedSuccess ? (
                   <>
-                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                    <Check className="w-3.5 h-3.5 text-black" />
                     <span>Saved!</span>
                   </>
                 ) : (

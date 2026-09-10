@@ -330,7 +330,7 @@ export async function discoverBusinesses(options: SearchOptions): Promise<Busine
 
   const seenWebsites = new Set<string>();
   const seenNames = new Set<string>();
-  let candidates: BusinessCandidate[] = [];
+  const candidates: BusinessCandidate[] = [];
 
   const addCandidate = (c: BusinessCandidate) => {
     if (!c.website || candidates.length >= limit) return;
