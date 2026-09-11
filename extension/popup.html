@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Scout — CMS & Lead Finder</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="extension-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Site Scout <span class="badge">PRO</span></h1>
+          <p class="brand-subtitle">CMS & Lead Discovery Engine</p>
+        </div>
+      </div>
+      <div id="connectionStatus" class="status-indicator ready" title="Engine Active">
+        <span class="dot"></span>
+        <span class="status-text">Active</span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-inspect">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v20"/></svg>
+        <span>Inspect Tab</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-fiverr">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Fiverr Links</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-pitch">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>AI Pitch</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-scout">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Scout</span>
+      </button>
+    </nav>
+
+    <!-- Tab 1: Current Tab Inspector -->
+    <section id="tab-inspect" class="tab-content active">
+      <div id="loadingInspect" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Analyzing DOM, headers & signatures...</p>
+      </div>
+
+      <div id="inspectContent">
+        <!-- Target Site Info Bar -->
+        <div class="site-header-card">
+          <div class="site-url-container">
+            <span class="url-label">ACTIVE URL</span>
+            <div id="activeUrlText" class="active-url">Checking active tab...</div>
+          </div>
+          <button id="btnReinspect" class="btn-icon" title="Refresh Analysis">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          </button>
+        </div>
+
+        <!-- CMS Detection Card -->
+        <div class="card detection-card">
+          <div class="card-header">
+            <span class="card-title">DETECTED PLATFORM</span>
+            <span id="cmsConfidence" class="confidence-badge">0% match</span>
+          </div>
+          <div class="cms-result-row">
+            <span id="detectedCmsBadge" class="cms-pill">Analyzing...</span>
+          </div>
+        </div>
+
+        <!-- Discovered Technologies -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">TECH STACK SIGNATURES</span>
+          </div>
+          <div id="techStackTags" class="tag-cloud">
+            <span class="empty-text">No third-party signatures found</span>
+          </div>
+        </div>
+
+        <!-- Contact Information Found -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">CLIENT CONTACT INFORMATION</span>
+          </div>
+          <div id="contactsContainer" class="contacts-list">
+            <div class="contact-row">
+              <span class="contact-label">Emails:</span>
+              <span id="extractedEmails" class="contact-val mono">None found</span>
+            </div>
+            <div class="contact-row">
+              <span class="contact-label">Phone:</span>
+              <span id="extractedPhones" class="contact-val mono">None found</span>
+            </div>
+            <div class="contact-row">
+              <span class="contact-label">Socials:</span>
+              <div id="extractedSocials" class="socials-links">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="action-bar">
+          <button id="btnGeneratePitchFromTab" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>Generate Pitch for this Client</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Fiverr Link Intelligence -->
+    <section id="tab-fiverr" class="tab-content">
+      <div class="notice-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>Fiverr Intelligence:</strong> Scans the active Fiverr gig, buyer request, or inbox for external client website URLs.</span>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">DISCOVERED CLIENT WEBSITES ON FIVERR</span>
+          <span id="fiverrCount" class="counter-badge">0 Found</span>
+        </div>
+        <div id="fiverrLinksList" class="fiverr-links-container">
+          <p class="empty-hint">Open a Fiverr page with a client website link or paste a URL below to inspect.</p>
+        </div>
+      </div>
+
+      <!-- Quick Manual URL Check -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">INSPECT ANY EXTERNAL CLIENT LINK</span>
+        </div>
+        <div class="search-input-group">
+          <input type="text" id="manualInspectUrl" placeholder="https://client-website.com" class="input-field" />
+          <button id="btnManualInspect" class="btn btn-secondary">Analyze</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 3: AI Proposal / Pitch Generator -->
+    <section id="tab-pitch" class="tab-content">
+      <div class="pitch-mode-toggle">
+        <button class="mode-btn active" data-mode="fiverr">Fiverr Proposal</button>
+        <button class="mode-btn" data-mode="email">Cold Email</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">TARGET WEAKNESSES TO HIGHLIGHT</span>
+        </div>
+        <ul id="pitchWeaknesses" class="weaknesses-list">
+          <li>Heavy client-side script bundle impacting mobile loading speed.</li>
+          <li>Layout shifting and template constraints limiting conversions.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">TAILORED OUTREACH MESSAGE</span>
+          <button id="btnCopyPitch" class="btn-tiny">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyPitchText">Copy Proposal</span>
+          </button>
+        </div>
+        <textarea id="pitchContent" class="pitch-textarea" rows="9" readonly></textarea>
+      </div>
+
+      <div id="fiverrSafetyAlert" class="safety-tip">
+        <strong>Fiverr Safety Tip:</strong> This proposal is 100% compliant with Fiverr guidelines. It pitches redesign & performance solutions without asking for off-platform contact.
+      </div>
+    </section>
+
+    <!-- Tab 4: Quick Site Scout Search -->
+    <section id="tab-scout" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">SCOUT LOCAL CLIENTS BY CITY & NICHE</span>
+        </div>
+        <div class="form-group">
+          <label class="input-label">Location / City</label>
+          <input type="text" id="scoutLocation" class="input-field" placeholder="e.g. Miami, FL or London, UK" value="Miami, FL" />
+        </div>
+        <div class="form-group">
+          <label class="input-label">Business Niche</label>
+          <input type="text" id="scoutNiche" class="input-field" placeholder="e.g. Dentists, Real Estate, Roofing" value="Dentists" />
+        </div>
+        <button id="btnLaunchFullApp" class="btn btn-primary w-full">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Open Full Scout App Dashboard</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>Site Scout Engine v1.0 • Built for Web Designers & Freelancers</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

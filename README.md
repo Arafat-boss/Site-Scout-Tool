@@ -18,6 +18,7 @@ Site Scout helps web designers, agencies, and sales professionals uncover local 
 - 📊 **Interactive Analytics & Filters**: Real-time stats cards and one-click filtering by CMS platform.
 - 📥 **Instant Excel / CSV Export**: Export all enriched leads to `.xlsx` with one click.
 - 🧪 **Quick URL Inspector**: Single-site analyzer bar to inspect any custom website on demand.
+- 🧩 **Chrome Extension (Manifest V3)**: In-browser extension for sniffing client sites, discovering external website links on Fiverr, and generating 1-click proposals.
 
 ---
 
