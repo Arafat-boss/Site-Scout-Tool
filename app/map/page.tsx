@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useTransition } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -17,15 +17,12 @@ import {
   ChevronRight,
   Maximize2,
   Minimize2,
-  Crosshair,
   RotateCcw,
   Check,
   Phone,
-  Calendar,
-  Layers,
-  SlidersHorizontal,
+  Clock,
   MapPin,
-  Clock
+  Compass
 } from "lucide-react";
 import { SearchHeader } from "@/components/SearchHeader";
 import { SettingsModal } from "@/components/SettingsModal";
@@ -33,9 +30,18 @@ import { MapPlace } from "@/app/api/map-search/route";
 
 type MapViewType = "m" | "k" | "p";
 
+const QUICK_SEARCH_CHIPS = [
+  "yoga London, UK",
+  "salon London, UK",
+  "dentist Miami, FL",
+  "restaurants New York",
+  "coffee Tokyo",
+  "gyms Los Angeles",
+];
+
 export default function MapPage() {
-  const [queryInput, setQueryInput] = useState<string>("salon London, UK");
-  const [activeQuery, setActiveQuery] = useState<string>("salon London, UK");
+  const [queryInput, setQueryInput] = useState<string>("yoga London, UK");
+  const [activeQuery, setActiveQuery] = useState<string>("yoga London, UK");
   const [results, setResults] = useState<MapPlace[]>([]);
   const [selectedPlace, setSelectedPlace] = useState<MapPlace | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -54,11 +60,12 @@ export default function MapPage() {
   const [copied, setCopied] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
 
-  // Fetch results when activeQuery changes
+  // Fetch results whenever activeQuery changes
   useEffect(() => {
     let isCancelled = false;
     async function fetchPlaces() {
       setIsLoading(true);
+      setIsIframeLoading(true);
       try {
         const res = await fetch(`/api/map-search?query=${encodeURIComponent(activeQuery)}`);
         if (res.ok) {
@@ -88,17 +95,32 @@ export default function MapPage() {
     };
   }, [activeQuery]);
 
-  // Handle Search Submission
+  // Handle Search Submission: resets selected place so map centers on new search query
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!queryInput.trim()) return;
+    const trimmed = queryInput.trim();
+    if (!trimmed) return;
+    setSelectedPlace(null);
+    setZoomLevel(14);
+    setIsLoading(true);
     setIsIframeLoading(true);
-    setActiveQuery(queryInput.trim());
+    setActiveQuery(trimmed);
   };
 
-  // Handle Select Result Card
+  // Select Quick Chip
+  const handleSelectQuickChip = (chip: string) => {
+    setQueryInput(chip);
+    setSelectedPlace(null);
+    setZoomLevel(14);
+    setIsLoading(true);
+    setIsIframeLoading(true);
+    setActiveQuery(chip);
+  };
+
+  // Handle Card Click: zooms in and centers map on the exact business
   const handleSelectCard = (place: MapPlace) => {
     setSelectedPlace(place);
+    setZoomLevel(16);
     setIsIframeLoading(true);
   };
 
@@ -109,15 +131,19 @@ export default function MapPage() {
 
   // Share Query / Link
   const handleShare = () => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      selectedPlace ? `${selectedPlace.name}, ${selectedPlace.address}` : activeQuery
-    )}`;
-    navigator.clipboard.writeText(url);
+    const directUrl = selectedPlace
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          selectedPlace.lat && selectedPlace.lon
+            ? `${selectedPlace.lat},${selectedPlace.lon}`
+            : `${selectedPlace.name}, ${selectedPlace.address}`
+        )}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeQuery)}`;
+    navigator.clipboard.writeText(directUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Filtered results list
+  // Filtered results
   const filteredResults = results.filter((p) => {
     if (minRating && p.rating < minRating) return false;
     if (openNowOnly && !p.openStatus.toLowerCase().includes("open")) return false;
@@ -125,9 +151,12 @@ export default function MapPage() {
     return true;
   });
 
-  // Target location for the map iframe
+  // Calculate dynamic target for Google Map embed
+  // If a place is selected, center on its exact coordinates or name + address
   const mapTargetQuery = selectedPlace
-    ? `${selectedPlace.name}, ${selectedPlace.address}`
+    ? selectedPlace.lat && selectedPlace.lon
+      ? `${selectedPlace.lat},${selectedPlace.lon}`
+      : `${selectedPlace.name}, ${selectedPlace.address}`
     : activeQuery;
 
   const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
@@ -168,7 +197,7 @@ export default function MapPage() {
       {/* Main Google Maps Two-Column Layout */}
       <div className="flex-1 flex relative overflow-hidden">
         {/* ============================================================ */}
-        {/* LEFT RESULTS SIDEBAR PANEL (Matching User Screenshot)         */}
+        {/* LEFT RESULTS SIDEBAR PANEL (Matching Google Maps UI)         */}
         {/* ============================================================ */}
         <aside
           className={`h-full bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 z-30 shadow-xl ${
@@ -184,7 +213,7 @@ export default function MapPage() {
                 type="text"
                 value={queryInput}
                 onChange={(e) => setQueryInput(e.target.value)}
-                placeholder="Search Google Maps..."
+                placeholder="Search Google Maps (e.g. yoga London, UK)..."
                 className="w-full pl-4 pr-20 py-2.5 text-sm rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-300/80 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner transition-all"
               />
               <div className="absolute right-2 flex items-center gap-1">
@@ -208,7 +237,25 @@ export default function MapPage() {
               </div>
             </form>
 
-            {/* 2. Google Maps Filter Chips */}
+            {/* Quick Suggestions Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none text-[11px]">
+              {QUICK_SEARCH_CHIPS.map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => handleSelectQuickChip(chip)}
+                  className={`px-2 py-1 rounded-md transition-all shrink-0 cursor-pointer ${
+                    activeQuery.toLowerCase() === chip.toLowerCase()
+                      ? "bg-blue-600 text-white font-semibold"
+                      : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800"
+                  }`}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
+            {/* 2. Filter Chips */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
               <button
                 type="button"
@@ -283,12 +330,14 @@ export default function MapPage() {
             {isLoading ? (
               <div className="p-8 flex flex-col items-center justify-center space-y-3">
                 <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-xs font-medium text-zinc-500">Searching local places on Google Maps...</p>
+                <p className="text-xs font-medium text-zinc-500">
+                  Searching Google Maps for "{activeQuery}"...
+                </p>
               </div>
             ) : filteredResults.length === 0 ? (
               <div className="p-8 text-center space-y-2">
-                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">No results found</p>
-                <p className="text-xs text-zinc-500">Try changing your filters or searching a different keyword or city.</p>
+                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">No places found</p>
+                <p className="text-xs text-zinc-500">Try changing your filters or searching another keyword or city.</p>
               </div>
             ) : (
               filteredResults.map((place) => {
@@ -299,7 +348,7 @@ export default function MapPage() {
                     onClick={() => handleSelectCard(place)}
                     className={`p-3.5 sm:p-4 transition-all cursor-pointer flex gap-3 ${
                       isSelected
-                        ? "bg-blue-50/50 dark:bg-blue-950/20 border-l-4 border-l-blue-600"
+                        ? "bg-blue-50/70 dark:bg-blue-950/40 border-l-4 border-l-blue-600 shadow-xs"
                         : "hover:bg-zinc-50 dark:hover:bg-zinc-900/60"
                     }`}
                   >
@@ -375,7 +424,9 @@ export default function MapPage() {
 
                         {/* External Google Maps Button */}
                         <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.address}`)}`}
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            place.lat && place.lon ? `${place.lat},${place.lon}` : `${place.name}, ${place.address}`
+                          )}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
@@ -388,7 +439,7 @@ export default function MapPage() {
                     </div>
 
                     {/* Thumbnail Image (Right side of card) */}
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 shadow-xs">
                       <img
                         src={place.imageUrl}
                         alt={place.name}
@@ -424,6 +475,7 @@ export default function MapPage() {
             {/* Search this area floating button */}
             <button
               onClick={() => {
+                setSelectedPlace(null);
                 setIsIframeLoading(true);
                 setActiveQuery(queryInput);
               }}
@@ -476,7 +528,7 @@ export default function MapPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
-                title="Open directly on Google Maps"
+                title="Open directly on Google Maps website"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
@@ -491,18 +543,54 @@ export default function MapPage() {
             </div>
           </div>
 
+          {/* Floating Selected Place Info Card (Top-Left of Map, matching Google Maps screenshot) */}
+          {selectedPlace && (
+            <div className="absolute top-14 left-4 z-20 max-w-sm w-full bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xl pointer-events-auto">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold text-zinc-900 dark:text-white truncate">
+                    {selectedPlace.name}
+                  </h4>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                    {selectedPlace.address}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-1 text-xs">
+                    <span className="font-bold text-zinc-800 dark:text-zinc-200">{selectedPlace.rating}</span>
+                    {renderStars(selectedPlace.rating)}
+                    <span className="text-zinc-400">({selectedPlace.reviewsCount})</span>
+                  </div>
+                </div>
+
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                    selectedPlace.lat && selectedPlace.lon
+                      ? `${selectedPlace.lat},${selectedPlace.lon}`
+                      : `${selectedPlace.name}, ${selectedPlace.address}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm shrink-0"
+                  title="Get Directions on Google Maps"
+                >
+                  <Navigation className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* Map Loading Overlay */}
           {isIframeLoading && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 dark:bg-zinc-950/60 backdrop-blur-xs transition-opacity">
               <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
               <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                Centering on {selectedPlace ? selectedPlace.name : activeQuery}...
+                Pinpointing {selectedPlace ? selectedPlace.name : activeQuery}...
               </p>
             </div>
           )}
 
-          {/* Interactive Google Map Iframe */}
+          {/* Interactive Google Map Iframe with Dynamic Unique Key */}
           <iframe
+            key={`${mapTargetQuery}-${mapType}-${zoomLevel}`}
             src={mapEmbedUrl}
             title="Google Maps Interactive View"
             onLoad={() => setIsIframeLoading(false)}
