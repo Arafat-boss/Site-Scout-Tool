@@ -9,14 +9,15 @@ export interface MapPlace {
   address: string;
   openStatus: string;
   closingTime?: string;
-  quote: string;
+  quote?: string;
   phone?: string;
   website?: string;
   imageUrl: string;
-  lat?: number;
-  lon?: number;
+  lat: number;
+  lon: number;
 }
 
+// Dynamic contextual images based on detected category
 const CATEGORY_IMAGES: Record<string, string[]> = {
   yoga: [
     "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=320&q=80",
@@ -69,53 +70,57 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
   ],
 };
 
-function getImageForCategory(category: string, index: number): string {
+function getImageForCategory(category: string, seed: number): string {
   const cat = category.toLowerCase();
   for (const [key, images] of Object.entries(CATEGORY_IMAGES)) {
     if (cat.includes(key)) {
-      return images[index % images.length];
+      return images[Math.abs(seed) % images.length];
     }
   }
   const defaults = CATEGORY_IMAGES.default;
-  return defaults[index % defaults.length];
+  return defaults[Math.abs(seed) % defaults.length];
 }
 
-const REVIEW_QUOTES = [
-  "Did absolute wonders, fantastic attention to detail and lovely staff!",
-  "Best service in the entire city, couldn't recommend them higher.",
-  "Outstanding experience from start to finish. Will definitely return!",
-  "Super professional team, top quality work and very welcoming atmosphere.",
-  "Exceptional quality and great customer care. A true local gem!",
-  "Great atmosphere and very clean facility. Truly 5 stars!",
-  "Incredible instructors and peaceful atmosphere. Truly transformational!",
-  "Very friendly staff, clean environment, and always punctual.",
-  "Hands down the best in the area! Highly recommended to all.",
-  "Amazing experience! Exceeded all expectations.",
-];
+// Helper to calculate pseudo-deterministic rating & review count from place ID
+function calculateDynamicMetrics(id: string | number) {
+  let hash = 0;
+  const str = String(id);
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const absHash = Math.abs(hash);
+  const rating = Number((4.1 + (absHash % 9) * 0.1).toFixed(1));
+  const reviewsCount = 45 + (absHash % 1450);
+  return { rating: Math.min(5.0, rating), reviewsCount };
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const rawQuery = searchParams.get("query") || "salon London, UK";
+  const rawQuery = searchParams.get("query")?.trim() || "";
 
-  // Clean and sanitize the query:
-  // OpenStreetMap Nominatim treats commas as administrative boundary delimiters,
-  // which severely limits results. Removing commas turns e.g. "yoga London, UK" -> "yoga London UK"
+  if (!rawQuery) {
+    return NextResponse.json({
+      success: true,
+      query: "",
+      total: 0,
+      results: [],
+    });
+  }
+
+  // Sanitize the search query (commas in Nominatim prevent POI keyword discovery)
   const cleanQuery = rawQuery.replace(/,/g, " ").replace(/\s+/g, " ").trim();
 
-  // Extract rough category and location
+  // Extract category and location if present
   let category = "Business";
-  let location = rawQuery;
+  let location = cleanQuery;
 
-  if (rawQuery.includes(" in ")) {
-    const parts = rawQuery.split(" in ");
+  if (cleanQuery.includes(" in ")) {
+    const parts = cleanQuery.split(" in ");
     category = parts[0].trim();
     location = parts.slice(1).join(" in ").trim();
-  } else if (rawQuery.includes(",")) {
-    const parts = rawQuery.split(",");
-    category = parts[0].trim();
-    location = parts.slice(1).join(",").trim();
   } else {
-    const words = rawQuery.split(" ");
+    const words = cleanQuery.split(" ");
     if (words.length > 1) {
       category = words[0];
       location = words.slice(1).join(" ");
@@ -126,42 +131,37 @@ export async function GET(req: NextRequest) {
   const seenIds = new Set<string>();
   const seenNames = new Set<string>();
 
-  // Helper to add unique place
-  const addPlace = (item: any, idx: number) => {
+  const processOsmItem = (item: any) => {
+    if (!item || !item.lat || !item.lon) return;
+
+    // Extract genuine place name from OSM
     const rawName = item.name || item.display_name.split(",")[0].trim();
-    const nameKey = rawName.toLowerCase();
-    const idKey = String(item.osm_id || `${rawName}-${item.lat}`);
+    if (!rawName) return;
+
+    const nameKey = rawName.toLowerCase().trim();
+    const idKey = String(item.osm_id || `${rawName}-${item.lat}-${item.lon}`);
 
     if (seenIds.has(idKey) || seenNames.has(nameKey)) return;
     seenIds.add(idKey);
     seenNames.add(nameKey);
 
-    const road =
-      item.address?.road ||
-      item.address?.pedestrian ||
-      item.address?.neighbourhood ||
-      item.address?.suburb ||
-      "";
-    const city =
-      item.address?.city ||
-      item.address?.town ||
-      item.address?.village ||
-      item.address?.county ||
-      location;
+    // Build real street address from addressdetails
+    const addr = item.address || {};
+    const road = addr.road || addr.pedestrian || addr.neighbourhood || addr.suburb || "";
+    const city = addr.city || addr.town || addr.village || addr.county || addr.state || location;
+    const houseNumber = addr.house_number ? `${addr.house_number} ` : "";
+    const postcode = addr.postcode ? ` ${addr.postcode}` : "";
+
     const displayAddress = road
-      ? `${road}, ${city}`
-      : item.display_name.split(",").slice(1, 3).join(",").trim() || location;
+      ? `${houseNumber}${road}, ${city}${postcode}`
+      : item.display_name.split(",").slice(1, 4).join(",").trim() || location;
 
+    // Real type/category from OSM tag
+    const rawType = item.type || item.class || category;
     const formattedCategory =
-      category.charAt(0).toUpperCase() + category.slice(1);
+      rawType.charAt(0).toUpperCase() + rawType.slice(1).replace(/_/g, " ");
 
-    const rating = Number(
-      (4.2 + (Math.abs(Math.sin(idx * 3 + 1)) * 0.75)).toFixed(1)
-    );
-    const reviewsCount = Math.floor(
-      85 + Math.abs(Math.sin(idx * 11)) * 1400
-    );
-
+    // Real website & phone from extratags if available
     const rawWebsite =
       item.extratags?.website ||
       item.extratags?.["contact:website"] ||
@@ -174,55 +174,60 @@ export async function GET(req: NextRequest) {
       item.extratags?.["phone:mobile"] ||
       undefined;
 
+    // Derive realistic rating & review metrics consistently from OSM ID
+    const { rating, reviewsCount } = calculateDynamicMetrics(item.osm_id || rawName);
+
+    const latNum = parseFloat(item.lat);
+    const lonNum = parseFloat(item.lon);
+
     places.push({
-      id: `osm-${item.osm_id || idx}-${Math.random().toString(36).substring(2, 6)}`,
+      id: `osm-${item.osm_id || Math.random().toString(36).substring(2, 8)}`,
       name: rawName,
       category: formattedCategory,
-      rating: Math.min(5.0, Math.max(4.0, rating)),
+      rating,
       reviewsCount,
       address: displayAddress,
-      openStatus: idx % 5 === 0 ? "Closed · Opens 9 AM" : "Open · Closes 9 PM",
+      openStatus: (Math.abs(item.osm_id || 1) % 4 === 0) ? "Closed · Opens 9 AM" : "Open · Closes 9 PM",
       closingTime: "9 PM",
-      quote: REVIEW_QUOTES[idx % REVIEW_QUOTES.length],
+      quote: item.extratags?.description || undefined,
       phone,
       website: rawWebsite,
-      imageUrl: getImageForCategory(category, idx),
-      lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon),
+      imageUrl: getImageForCategory(category, item.osm_id || places.length),
+      lat: latNum,
+      lon: lonNum,
     });
   };
 
   try {
-    // 1. Primary Search using Clean Query (no commas) to discover 40-50 real businesses
+    // 1. Live Primary Query to Nominatim OpenStreetMap
     const primaryUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
       cleanQuery
     )}&format=json&addressdetails=1&extratags=1&limit=50`;
 
     const res1 = await fetch(primaryUrl, {
       headers: {
-        "User-Agent": "SiteScout-LiveMap/3.0 (dev@sitescout.io)",
+        "User-Agent": "SiteScout-LiveSearch/4.0 (contact@sitescout.io)",
         "Accept-Language": "en-US,en;q=0.9",
       },
-      next: { revalidate: 1800 },
+      next: { revalidate: 3600 },
     });
 
     if (res1.ok) {
       const data1 = await res1.json();
       if (Array.isArray(data1)) {
-        data1.forEach((item, idx) => addPlace(item, idx));
+        data1.forEach(processOsmItem);
       }
     }
 
-    // 2. Secondary Search if results are under 15: search "${category} in ${location}"
-    if (places.length < 15 && category && location) {
-      const altQuery = `${category} in ${location.replace(/,/g, " ").trim()}`;
+    // 2. Secondary Live Query: if results are fewer than 15, query with "${category} in ${location}"
+    if (places.length < 15 && category && location && category.toLowerCase() !== location.toLowerCase()) {
       const secondaryUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        altQuery
-      )}&format=json&addressdetails=1&extratags=1&limit=30`;
+        `${category} in ${location}`
+      )}&format=json&addressdetails=1&extratags=1&limit=40`;
 
       const res2 = await fetch(secondaryUrl, {
         headers: {
-          "User-Agent": "SiteScout-LiveMap/3.0 (dev@sitescout.io)",
+          "User-Agent": "SiteScout-LiveSearch/4.0 (contact@sitescout.io)",
           "Accept-Language": "en-US,en;q=0.9",
         },
       });
@@ -230,53 +235,12 @@ export async function GET(req: NextRequest) {
       if (res2.ok) {
         const data2 = await res2.json();
         if (Array.isArray(data2)) {
-          data2.forEach((item, idx) => addPlace(item, places.length + idx));
+          data2.forEach(processOsmItem);
         }
       }
     }
   } catch (err) {
-    console.error("Nominatim search error:", err);
-  }
-
-  // 3. Fallback: If still under 8 results, intelligently generate geographically authentic local places
-  if (places.length < 8) {
-    const cleanCat = category.replace(/[^a-zA-Z\s]/g, "").trim() || "Studio";
-    const neighborhoodList = [
-      "Downtown", "Central Square", "Northside", "West End", "High Street",
-      "Park Avenue", "Riverside", "Broadway", "Market Quarter", "Southgate"
-    ];
-
-    const fallbackTemplates = [
-      { name: `The Pure ${cleanCat} Studio`, road: "12 High Street" },
-      { name: `Urban Flow ${cleanCat}`, road: "45 Market Plaza" },
-      { name: `Zenith ${cleanCat} Lounge`, road: "88 Central Avenue" },
-      { name: `Inner Peace ${cleanCat} Collective`, road: "104 Park View" },
-      { name: `Prana Life ${cleanCat}`, road: "22 Broadway Way" },
-      { name: `Lotus & Stone ${cleanCat}`, road: "71 Northgate Rd" },
-      { name: `Sanctuary ${cleanCat} Center`, road: "19 Riverside Walk" },
-      { name: `Core Balance ${cleanCat}`, road: "53 Queens Boulevard" },
-      { name: `Elevation ${cleanCat} Lab`, road: "90 West Commercial St" },
-      { name: `Equinox ${cleanCat} Space`, road: "14 Kings Road" },
-    ];
-
-    fallbackTemplates.forEach((tpl, idx) => {
-      if (places.length >= 25) return;
-      const hood = neighborhoodList[idx % neighborhoodList.length];
-      places.push({
-        id: `gen-${idx}-${Math.random().toString(36).substring(2, 6)}`,
-        name: tpl.name,
-        category: `${cleanCat} · ${location}`,
-        rating: Number((4.5 + (idx % 5) * 0.1).toFixed(1)),
-        reviewsCount: 140 + idx * 95,
-        address: `${tpl.road}, ${hood}, ${location}`,
-        openStatus: "Open · Closes 9 PM",
-        closingTime: "9 PM",
-        quote: REVIEW_QUOTES[idx % REVIEW_QUOTES.length],
-        phone: "+1 (555) " + (312 + idx * 19) + "-4020",
-        website: `https://${tpl.name.toLowerCase().replace(/[^a-z]/g, "")}.com`,
-        imageUrl: getImageForCategory(cleanCat, idx),
-      });
-    });
+    console.error("Live Nominatim search error:", err);
   }
 
   return NextResponse.json({
