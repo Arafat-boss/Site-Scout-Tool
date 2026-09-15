@@ -384,6 +384,14 @@ export default function MapPage() {
                         </p>
                       </div>
 
+                      {/* Phone Number */}
+                      {place.phone && (
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400 pt-0.5">
+                          <Phone className="w-3 h-3 text-zinc-400" />
+                          <span className="text-[11px] font-mono">{place.phone}</span>
+                        </div>
+                      )}
+
                       {/* Review Quote / Snippet */}
                       {place.quote && (
                         <div className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-400 pt-1">
