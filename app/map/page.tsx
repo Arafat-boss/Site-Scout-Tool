@@ -1,412 +1,519 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useTransition } from "react";
 import Link from "next/link";
 import {
-  MapPin,
   Search,
-  Layers,
-  Compass,
-  Maximize2,
-  Minimize2,
+  X,
+  Star,
+  User,
+  Share2,
+  Info,
   ExternalLink,
   Navigation,
-  Crosshair,
-  Copy,
-  Check,
   Globe2,
-  Building2,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  Crosshair,
   RotateCcw,
-  Share2,
-  Info
+  Check,
+  Phone,
+  Calendar,
+  Layers,
+  SlidersHorizontal,
+  MapPin,
+  Clock
 } from "lucide-react";
 import { SearchHeader } from "@/components/SearchHeader";
 import { SettingsModal } from "@/components/SettingsModal";
+import { MapPlace } from "@/app/api/map-search/route";
 
-type MapViewType = "m" | "k" | "p" | "h";
-
-const POPULAR_CITIES = [
-  "Miami, FL",
-  "New York, NY",
-  "London, UK",
-  "Dhaka, Bangladesh",
-  "Tokyo, Japan",
-  "Dubai, UAE",
-  "Paris, France",
-  "Sydney, Australia",
-];
-
-const BUSINESS_CATEGORIES = [
-  "Dentists",
-  "Web Agencies",
-  "Restaurants",
-  "Real Estate",
-  "Lawyers",
-  "Gyms & Fitness",
-  "Coffee Shops",
-  "Plumbers",
-];
+type MapViewType = "m" | "k" | "p";
 
 export default function MapPage() {
-  const [queryInput, setQueryInput] = useState("Miami, FL");
-  const [activeQuery, setActiveQuery] = useState("Miami, FL");
-  const [mapType, setMapType] = useState<MapViewType>("m"); // 'm' = Roadmap, 'k' = Satellite, 'p' = Terrain, 'h' = Hybrid
+  const [queryInput, setQueryInput] = useState<string>("salon London, UK");
+  const [activeQuery, setActiveQuery] = useState<string>("salon London, UK");
+  const [results, setResults] = useState<MapPlace[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<MapPlace | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+
+  // Filters
+  const [minRating, setMinRating] = useState<number | null>(null);
+  const [openNowOnly, setOpenNowOnly] = useState<boolean>(false);
+  const [hasWebsiteOnly, setHasWebsiteOnly] = useState<boolean>(false);
+
+  // Map state
+  const [mapType, setMapType] = useState<MapViewType>("m");
   const [zoomLevel, setZoomLevel] = useState<number>(14);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
-  const [showDirections, setShowDirections] = useState<boolean>(false);
-  const [directionsOrigin, setDirectionsOrigin] = useState<string>("");
-  const [directionsDestination, setDirectionsDestination] = useState<string>("");
-  const [isGeoLocating, setIsGeoLocating] = useState<boolean>(false);
-  const [statusMessage, setStatusMessage] = useState<string>("");
 
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  const constructMapEmbedUrl = () => {
-    if (showDirections && (directionsOrigin || directionsDestination)) {
-      const originParam = encodeURIComponent(directionsOrigin || activeQuery);
-      const destParam = encodeURIComponent(directionsDestination || activeQuery);
-      return `https://maps.google.com/maps?saddr=${originParam}&daddr=${destParam}&t=${mapType}&z=${zoomLevel}&ie=UTF8&output=embed`;
+  // Fetch results when activeQuery changes
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchPlaces() {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`/api/map-search?query=${encodeURIComponent(activeQuery)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!isCancelled && data.results) {
+            setResults(data.results);
+            if (data.results.length > 0) {
+              setSelectedPlace(data.results[0]);
+            } else {
+              setSelectedPlace(null);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load map results:", err);
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+          setIsIframeLoading(false);
+        }
+      }
     }
-    return `https://maps.google.com/maps?q=${encodeURIComponent(
-      activeQuery
-    )}&t=${mapType}&z=${zoomLevel}&ie=UTF8&iwloc=&output=embed`;
-  };
 
+    fetchPlaces();
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeQuery]);
+
+  // Handle Search Submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!queryInput.trim()) return;
     setIsIframeLoading(true);
     setActiveQuery(queryInput.trim());
-    setShowDirections(false);
   };
 
-  const handleSelectQuery = (query: string) => {
-    setQueryInput(query);
-    setActiveQuery(query);
-    setShowDirections(false);
+  // Handle Select Result Card
+  const handleSelectCard = (place: MapPlace) => {
+    setSelectedPlace(place);
     setIsIframeLoading(true);
   };
 
-  const handleAppendCategory = (category: string) => {
-    const combined = `${category} in ${activeQuery.split(" in ").pop() || activeQuery}`;
-    setQueryInput(combined);
-    setActiveQuery(combined);
-    setShowDirections(false);
-    setIsIframeLoading(true);
+  // Handle Clear Search
+  const handleClearSearch = () => {
+    setQueryInput("");
   };
 
-  const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
-      return;
-    }
-    setIsGeoLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setIsGeoLocating(false);
-        const coords = `${position.coords.latitude.toFixed(6)},${position.coords.longitude.toFixed(6)}`;
-        setQueryInput(coords);
-        setActiveQuery(coords);
-        setIsIframeLoading(true);
-        setStatusMessage("Located your current GPS position!");
-        setTimeout(() => setStatusMessage(""), 3500);
-      },
-      (error) => {
-        setIsGeoLocating(false);
-        console.error(error);
-        alert("Unable to retrieve location. Please check browser permissions.");
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  };
-
-  const handleCopyLink = () => {
-    const directUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeQuery)}`;
-    navigator.clipboard.writeText(directUrl);
+  // Share Query / Link
+  const handleShare = () => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      selectedPlace ? `${selectedPlace.name}, ${selectedPlace.address}` : activeQuery
+    )}`;
+    navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Keyboard shortcut: Escape exits fullscreen
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isFullscreen) {
-        setIsFullscreen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFullscreen]);
+  // Filtered results list
+  const filteredResults = results.filter((p) => {
+    if (minRating && p.rating < minRating) return false;
+    if (openNowOnly && !p.openStatus.toLowerCase().includes("open")) return false;
+    if (hasWebsiteOnly && !p.website) return false;
+    return true;
+  });
 
-  const mapEmbedUrl = constructMapEmbedUrl();
-  const googleMapsDirectUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeQuery)}`;
+  // Target location for the map iframe
+  const mapTargetQuery = selectedPlace
+    ? `${selectedPlace.name}, ${selectedPlace.address}`
+    : activeQuery;
+
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
+    mapTargetQuery
+  )}&t=${mapType}&z=${zoomLevel}&ie=UTF8&iwloc=&output=embed`;
+
+  const externalGoogleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    mapTargetQuery
+  )}`;
+
+  // Render Stars Component
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.4;
+    return (
+      <div className="flex items-center gap-0.5 text-amber-500">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={`w-3.5 h-3.5 ${
+              i < fullStars
+                ? "fill-amber-400 text-amber-400"
+                : i === fullStars && hasHalf
+                ? "fill-amber-200 text-amber-400"
+                : "text-zinc-300 dark:text-zinc-700"
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div className={`min-h-screen flex flex-col ${isFullscreen ? "overflow-hidden" : ""}`}>
+    <div className={`h-screen flex flex-col bg-zinc-100 dark:bg-black overflow-hidden ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
       {/* Top Navbar */}
-      <SearchHeader onOpenSettings={() => setIsSettingsModalOpen(true)} />
+      {!isFullscreen && <SearchHeader onOpenSettings={() => setIsSettingsModalOpen(true)} />}
 
-      {/* Main Map Content */}
-      <main className={`flex-1 flex flex-col ${isFullscreen ? "fixed inset-0 z-50 bg-black pt-2 pb-2 px-2" : "max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6"}`}>
-        {/* Header Toolbar & Controls */}
-        <div className="flex flex-col gap-4 mb-4">
-          {/* Top Bar: Title & Search */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white dark:bg-zinc-950 p-3 sm:p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors">
-            {/* Search Input Form */}
-            <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center gap-2">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={queryInput}
-                  onChange={(e) => setQueryInput(e.target.value)}
-                  placeholder="Search any city, place, address, or business (e.g. Miami, FL, Dentists in New York)..."
-                  className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white text-zinc-900 dark:text-white placeholder-zinc-400 transition-all"
-                />
+      {/* Main Google Maps Two-Column Layout */}
+      <div className="flex-1 flex relative overflow-hidden">
+        {/* ============================================================ */}
+        {/* LEFT RESULTS SIDEBAR PANEL (Matching User Screenshot)         */}
+        {/* ============================================================ */}
+        <aside
+          className={`h-full bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 z-30 shadow-xl ${
+            sidebarOpen
+              ? "w-full sm:w-[410px] md:w-[440px] shrink-0"
+              : "-ml-full sm:-ml-[410px] md:-ml-[440px] w-0 pointer-events-none"
+          }`}
+        >
+          {/* 1. Google Maps Search Bar & Controls */}
+          <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-10 space-y-2.5">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+              <input
+                type="text"
+                value={queryInput}
+                onChange={(e) => setQueryInput(e.target.value)}
+                placeholder="Search Google Maps..."
+                className="w-full pl-4 pr-20 py-2.5 text-sm rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-300/80 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner transition-all"
+              />
+              <div className="absolute right-2 flex items-center gap-1">
+                {queryInput && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                    title="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  className="p-2 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  title="Search"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
               </div>
-
-              <button
-                type="submit"
-                className="px-4 py-2.5 text-xs font-semibold rounded-lg bg-black text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
-              >
-                <Search className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Search Map</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleGetCurrentLocation}
-                disabled={isGeoLocating}
-                className="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all shrink-0 cursor-pointer"
-                title="Use Current Location"
-              >
-                <Crosshair className={`w-4 h-4 ${isGeoLocating ? "animate-spin text-emerald-500" : ""}`} />
-              </button>
             </form>
 
-            {/* Quick Action Buttons */}
-            <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              {/* Map Type Mode Switcher */}
-              <div className="inline-flex rounded-lg border border-zinc-200 dark:border-zinc-800 p-0.5 bg-zinc-100 dark:bg-zinc-900 text-xs font-medium">
-                <button
-                  type="button"
-                  onClick={() => setMapType("m")}
-                  className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
-                    mapType === "m"
-                      ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold shadow-xs"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                  }`}
-                  title="Standard Map View"
-                >
-                  Map
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMapType("k")}
-                  className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
-                    mapType === "k"
-                      ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold shadow-xs"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                  }`}
-                  title="Satellite Imagery"
-                >
-                  Satellite
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMapType("p")}
-                  className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
-                    mapType === "p"
-                      ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-semibold shadow-xs"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                  }`}
-                  title="Terrain Topography"
-                >
-                  Terrain
-                </button>
-              </div>
-
-              {/* Directions Toggle */}
+            {/* 2. Google Maps Filter Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
               <button
                 type="button"
-                onClick={() => setShowDirections(!showDirections)}
-                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border transition-all cursor-pointer ${
-                  showDirections
-                    ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                    : "bg-zinc-50 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                onClick={() => setMinRating(minRating === 4.0 ? null : 4.0)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer font-medium ${
+                  minRating
+                    ? "bg-blue-50 dark:bg-blue-950/60 border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
+                    : "border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                 }`}
-                title="Get Directions"
               >
-                <Navigation className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Directions</span>
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                <span>Rating {minRating ? "4.0+" : "▾"}</span>
               </button>
 
-              {/* Scout This Location in App */}
-              <Link
-                href={`/?location=${encodeURIComponent(activeQuery)}`}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 transition-opacity shadow-xs"
-                title="Scout Leads in this Location"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Scout Leads</span>
-              </Link>
-
-              {/* Open in Google Maps External Tab */}
-              <a
-                href={googleMapsDirectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-zinc-50 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
-                title="Open directly in Google Maps website"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Google Maps</span>
-              </a>
-
-              {/* Share / Copy Link */}
               <button
                 type="button"
-                onClick={handleCopyLink}
-                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer"
-                title="Copy Map Link"
+                onClick={() => setOpenNowOnly(!openNowOnly)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer font-medium ${
+                  openNowOnly
+                    ? "bg-blue-50 dark:bg-blue-950/60 border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
+                    : "border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                }`}
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                <Clock className="w-3 h-3 text-zinc-500" />
+                <span>Hours {openNowOnly ? "(Open)" : "▾"}</span>
               </button>
 
-              {/* Fullscreen Mode Toggle */}
               <button
                 type="button"
-                onClick={() => setIsFullscreen(!isFullscreen)}
-                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer"
-                title={isFullscreen ? "Exit Fullscreen (Esc)" : "Expand Fullscreen"}
+                onClick={() => setHasWebsiteOnly(!hasWebsiteOnly)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer font-medium ${
+                  hasWebsiteOnly
+                    ? "bg-blue-50 dark:bg-blue-950/60 border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
+                    : "border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                }`}
               >
-                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                <Globe2 className="w-3 h-3 text-zinc-500" />
+                <span>Has Website</span>
               </button>
             </div>
           </div>
 
-          {/* Directions Panel (Expandable) */}
-          {showDirections && (
-            <div className="bg-white dark:bg-zinc-950 p-3 sm:p-4 rounded-xl border border-emerald-500/30 dark:border-emerald-500/30 shadow-sm flex flex-col sm:flex-row items-center gap-3">
-              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-xs shrink-0">
-                <Navigation className="w-4 h-4" />
-                <span>Google Route:</span>
-              </div>
-              <input
-                type="text"
-                placeholder="Origin / Starting point (e.g. Airport, Downtown)"
-                value={directionsOrigin}
-                onChange={(e) => setDirectionsOrigin(e.target.value)}
-                className="flex-1 px-3 py-2 text-xs rounded-md bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white"
-              />
-              <span className="text-zinc-400 text-xs font-bold">→</span>
-              <input
-                type="text"
-                placeholder="Destination (e.g. Hotel, Business Address)"
-                value={directionsDestination}
-                onChange={(e) => setDirectionsDestination(e.target.value)}
-                className="flex-1 px-3 py-2 text-xs rounded-md bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white"
-              />
-              <button
-                type="button"
-                onClick={() => setIsIframeLoading(true)}
-                className="px-3 py-2 text-xs font-semibold rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors cursor-pointer shrink-0"
-              >
-                Calculate Route
-              </button>
+          {/* 3. Results Header Banner */}
+          <div className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/70 dark:bg-zinc-900/30">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-800 dark:text-zinc-200 font-medium">
+              <span className="font-semibold">Results</span>
+              <span className="text-[11px] text-zinc-500">({filteredResults.length})</span>
+              <Info className="w-3.5 h-3.5 text-zinc-400" />
             </div>
-          )}
 
-          {/* Preset Quick Chips: Cities & Lead Niches */}
-          {!isFullscreen && (
-            <div className="flex flex-col gap-2 bg-zinc-100/60 dark:bg-zinc-900/40 p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1 shrink-0">
-                  <Globe2 className="w-3.5 h-3.5" /> Popular Cities:
-                </span>
-                {POPULAR_CITIES.map((city) => (
-                  <button
-                    key={city}
-                    onClick={() => handleSelectQuery(city)}
-                    className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
-                      activeQuery.toLowerCase() === city.toLowerCase()
-                        ? "bg-black text-white dark:bg-white dark:text-black font-semibold shadow-xs"
-                        : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400"
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              title="Share Location"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-emerald-500 font-medium">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Share</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* 4. Scrollable List of Result Cards */}
+          <div className="flex-1 overflow-y-auto divide-y divide-zinc-200/80 dark:divide-zinc-800/80">
+            {isLoading ? (
+              <div className="p-8 flex flex-col items-center justify-center space-y-3">
+                <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-xs font-medium text-zinc-500">Searching local places on Google Maps...</p>
+              </div>
+            ) : filteredResults.length === 0 ? (
+              <div className="p-8 text-center space-y-2">
+                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">No results found</p>
+                <p className="text-xs text-zinc-500">Try changing your filters or searching a different keyword or city.</p>
+              </div>
+            ) : (
+              filteredResults.map((place) => {
+                const isSelected = selectedPlace?.id === place.id;
+                return (
+                  <div
+                    key={place.id}
+                    onClick={() => handleSelectCard(place)}
+                    className={`p-3.5 sm:p-4 transition-all cursor-pointer flex gap-3 ${
+                      isSelected
+                        ? "bg-blue-50/50 dark:bg-blue-950/20 border-l-4 border-l-blue-600"
+                        : "hover:bg-zinc-50 dark:hover:bg-zinc-900/60"
                     }`}
                   >
-                    {city}
-                  </button>
-                ))}
-              </div>
+                    {/* Card Body */}
+                    <div className="flex-1 flex flex-col justify-between space-y-1.5 min-w-0">
+                      <div>
+                        {/* Title */}
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="text-sm font-bold text-zinc-900 dark:text-white truncate">
+                            {place.name}
+                          </h3>
+                        </div>
 
-              <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-zinc-200/60 dark:border-zinc-800/60">
-                <span className="text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1 shrink-0">
-                  <Building2 className="w-3.5 h-3.5" /> Scout Business Niches:
-                </span>
-                {BUSINESS_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => handleAppendCategory(cat)}
-                    className="px-2 py-0.5 rounded-md bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 hover:text-black dark:hover:text-white transition-all cursor-pointer text-[11px]"
-                  >
-                    + {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+                        {/* Rating and Reviews */}
+                        <div className="flex items-center gap-1.5 mt-0.5 text-xs">
+                          <span className="font-bold text-zinc-800 dark:text-zinc-200">{place.rating}</span>
+                          {renderStars(place.rating)}
+                          <span className="text-zinc-500 dark:text-zinc-400">({place.reviewsCount.toLocaleString()})</span>
+                        </div>
 
-        {/* Live Status / Notification Alert */}
-        {statusMessage && (
-          <div className="mb-3 px-3 py-1.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-medium flex items-center gap-2">
-            <Check className="w-3.5 h-3.5" />
-            <span>{statusMessage}</span>
+                        {/* Category & Address */}
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400 truncate mt-0.5">
+                          {place.category} · {place.address}
+                        </p>
+
+                        {/* Open Status */}
+                        <p className="text-xs font-medium mt-0.5">
+                          {place.openStatus.toLowerCase().includes("open") ? (
+                            <span className="text-emerald-600 dark:text-emerald-400">{place.openStatus}</span>
+                          ) : (
+                            <span className="text-red-500">{place.openStatus}</span>
+                          )}
+                        </p>
+                      </div>
+
+                      {/* Review Quote / Snippet */}
+                      {place.quote && (
+                        <div className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-400 pt-1">
+                          <div className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+                            <User className="w-2.5 h-2.5" />
+                          </div>
+                          <p className="italic text-[11px] leading-snug line-clamp-2">
+                            "{place.quote}"
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="pt-2 flex items-center gap-2 flex-wrap">
+                        {/* Scout Lead Tech Button */}
+                        <Link
+                          href={`/?location=${encodeURIComponent(place.address)}&niche=${encodeURIComponent(place.category)}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-xs"
+                        >
+                          <Sparkles className="w-3 h-3" />
+                          <span>Scout Tech</span>
+                        </Link>
+
+                        {/* Website Link */}
+                        {place.website && (
+                          <a
+                            href={place.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          >
+                            <Globe2 className="w-3 h-3" />
+                            <span>Website</span>
+                          </a>
+                        )}
+
+                        {/* External Google Maps Button */}
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.address}`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>Maps</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Thumbnail Image (Right side of card) */}
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900">
+                      <img
+                        src={place.imageUrl}
+                        alt={place.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
-        )}
+        </aside>
 
-        {/* Google Maps Interactive Container */}
-        <div className={`relative w-full rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-900 shadow-lg ${
-          isFullscreen ? "flex-1 h-full min-h-0" : "h-[650px] sm:h-[720px]"
-        }`}>
-          {/* Loading Placeholder */}
+        {/* Sidebar Toggle Handle (< / >) */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="absolute top-1/2 -translate-y-1/2 z-40 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 p-1.5 rounded-r-md shadow-md text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-all cursor-pointer"
+          style={{
+            left: sidebarOpen ? (typeof window !== "undefined" && window.innerWidth < 640 ? "100%" : "440px") : "0px",
+          }}
+          title={sidebarOpen ? "Collapse sidebar" : "Expand results sidebar"}
+        >
+          {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        </button>
+
+        {/* ============================================================ */}
+        {/* RIGHT INTERACTIVE GOOGLE MAP EMBED                           */}
+        {/* ============================================================ */}
+        <main className="flex-1 h-full relative bg-zinc-200 dark:bg-zinc-900">
+          {/* Top Floating Map Controls */}
+          <div className="absolute top-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none gap-2">
+            {/* Search this area floating button */}
+            <button
+              onClick={() => {
+                setIsIframeLoading(true);
+                setActiveQuery(queryInput);
+              }}
+              className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 shadow-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3 text-blue-500" />
+              <span>Search this area</span>
+            </button>
+
+            {/* Map Mode Buttons & Fullscreen */}
+            <div className="pointer-events-auto flex items-center gap-1.5 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-1 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-md text-xs">
+              <button
+                type="button"
+                onClick={() => setMapType("m")}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  mapType === "m"
+                    ? "bg-zinc-900 dark:bg-white text-white dark:text-black font-semibold shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                Map
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapType("k")}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  mapType === "k"
+                    ? "bg-zinc-900 dark:bg-white text-white dark:text-black font-semibold shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                Satellite
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapType("p")}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  mapType === "p"
+                    ? "bg-zinc-900 dark:bg-white text-white dark:text-black font-semibold shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                }`}
+              >
+                Terrain
+              </button>
+
+              <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1" />
+
+              <a
+                href={externalGoogleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
+                title="Open directly on Google Maps"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+
+              <button
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                className="p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors cursor-pointer"
+                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+              >
+                {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Map Loading Overlay */}
           {isIframeLoading && (
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/70 dark:bg-zinc-950/70 backdrop-blur-sm transition-opacity">
-              <div className="w-9 h-9 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-              <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                Connecting to Google Maps engine...
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 dark:bg-zinc-950/60 backdrop-blur-xs transition-opacity">
+              <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+              <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                Centering on {selectedPlace ? selectedPlace.name : activeQuery}...
               </p>
             </div>
           )}
 
-          {/* Original Google Map Embed Iframe */}
+          {/* Interactive Google Map Iframe */}
           <iframe
-            ref={iframeRef}
             src={mapEmbedUrl}
-            title="Google Maps"
+            title="Google Maps Interactive View"
             onLoad={() => setIsIframeLoading(false)}
-            className="w-full h-full border-0 filter contrast-100"
+            className="w-full h-full border-0"
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
 
-          {/* Floating HUD Badge: Location & Zoom Info */}
-          <div className="absolute bottom-4 left-4 z-10 hidden sm:flex items-center gap-2 bg-white/90 dark:bg-black/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-md text-xs text-zinc-700 dark:text-zinc-300">
-            <MapPin className="w-3.5 h-3.5 text-red-500" />
-            <span className="font-semibold">{activeQuery}</span>
-            <span className="text-zinc-400">•</span>
-            <span className="text-[11px] text-zinc-500 uppercase tracking-wider font-mono">
-              {mapType === "k" ? "Satellite" : mapType === "p" ? "Terrain" : "Roadmap"}
-            </span>
-          </div>
-
-          {/* Floating Zoom Controls */}
-          <div className="absolute top-4 right-4 z-10 flex flex-col gap-1.5 bg-white/90 dark:bg-black/90 backdrop-blur-md p-1 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-md">
+          {/* Zoom In / Zoom Out Controls */}
+          <div className="absolute bottom-6 right-4 z-20 flex flex-col gap-1 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md p-1 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-lg">
             <button
               onClick={() => {
                 setZoomLevel((prev) => Math.min(prev + 1, 21));
@@ -428,37 +535,9 @@ export default function MapPage() {
             >
               −
             </button>
-            <div className="h-px bg-zinc-200 dark:bg-zinc-800 w-full" />
-            <button
-              onClick={() => {
-                setZoomLevel(14);
-                setIsIframeLoading(true);
-              }}
-              className="w-8 h-8 flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors cursor-pointer"
-              title="Reset Zoom to City Level"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
           </div>
-        </div>
-
-        {/* Bottom Helpful Tips */}
-        {!isFullscreen && (
-          <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400 px-1">
-            <div className="flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-zinc-400" />
-              <span>
-                Tip: You can pan, drag, scroll to zoom, view Street View, or click businesses directly inside the Google Map.
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] text-zinc-400">
-                Official Google Maps Embed API Core
-              </span>
-            </div>
-          </div>
-        )}
-      </main>
+        </main>
+      </div>
 
       {/* Settings Modal */}
       <SettingsModal
@@ -466,13 +545,6 @@ export default function MapPage() {
         onClose={() => setIsSettingsModalOpen(false)}
         onSave={() => {}}
       />
-
-      {/* Footer */}
-      {!isFullscreen && (
-        <footer className="border-t border-zinc-200 dark:border-zinc-900 py-6 text-center text-xs text-zinc-500 transition-colors mt-8">
-          Site Scout • Google Maps Lead Scouting Integration • 100% Free
-        </footer>
-      )}
     </div>
   );
 }
